@@ -250,7 +250,7 @@ img { display: block; }
 .step__img { width: 40px; height: 40px; flex: none; border-radius: 12px; overflow: hidden; }
 .step__img img { width: 40px; height: 40px; }
 .pts { display: flex; align-items: center; gap: 4px; font-size: 14px; line-height: 20px; font-weight: 500; white-space: nowrap; }
-.ico-a { width: 16px; height: 16px; border-radius: 50%; background: var(--violet); color: #fff; font-size: 10px; font-weight: 700; display: grid; place-items: center; margin: 2px; }
+.ico-a { width: 16px; height: 16px; border-radius: 50%; background: var(--violet); color: #fff; font-size: 10px; line-height: 15px; font-weight: 700; display: block; text-align: center; margin: 2px; flex: none; }
 .st.is-leaving { animation: leave .35s ease forwards; }
 @keyframes leave { to { opacity: 0; transform: translateX(12px); } }
 .st.is-new { animation: arrive .5s ease; }
