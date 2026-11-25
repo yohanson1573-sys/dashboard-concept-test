@@ -190,7 +190,6 @@ const $app = () => document.getElementById('app');
 function render() {
   const D = S.D;
   renderDemo();
-  document.body.classList.toggle('hide-amt', !!S.hideAmt && S.page === 'dash');
   const html = `
     <aside class="side">${sideHtml()}</aside>
     <div class="body">
@@ -269,9 +268,9 @@ function dashHtml() {
         <button class="tab" data-a="stub" data-v="Сводка">Сводка</button>
         <button class="tab" data-a="stub" data-v="Мультибанк">Мультибанк</button>
       </div>
-      <div class="seg" role="group" aria-label="Суммы на главной">
-        <button class="${S.hideAmt ? '' : 'is-on'}" data-a="amt" data-v="show" aria-label="Показать суммы" aria-pressed="${!S.hideAmt}">${eyeIcon}</button>
-        <button class="${S.hideAmt ? 'is-on' : ''}" data-a="amt" data-v="hide" aria-label="Скрыть суммы" aria-pressed="${!!S.hideAmt}">${eyeOffIcon}</button>
+      <div class="seg" aria-hidden="true">
+        <span class="is-on">${eyeIcon}</span>
+        <span>${eyeOffIcon}</span>
       </div>
       <button class="gear" data-a="stub" data-v="Настройка дашборда" aria-label="Настройка дашборда">${gearIcon}</button>
     </div>
@@ -802,7 +801,6 @@ const ACTIONS = {
   long: () => { S.long = !S.long; writeHash(); render(); },
   loading: () => { S.loading = !S.loading; render(); },
   reset: () => reset(),
-  amt: v => { S.hideAmt = v === 'hide'; render(); },
   stub: v => toast(`«${v}» — вне задания, в прототипе не нарисовано`),
   tIdx: v => { S.todayIdx += Number(v); render(); },
   doToday: (v, el) => doToday(v, el),
