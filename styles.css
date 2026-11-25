@@ -288,12 +288,13 @@ img { display: block; }
 .tbl__more:hover { color: var(--text-2); }
 .empty { padding: 56px 24px; text-align: center; color: var(--text-2); font-size: 14px; }
 .empty b { display: block; color: var(--text); font-size: 16px; margin-bottom: 4px; font-weight: 600; }
-.bulk {
-  position: sticky; bottom: 16px; margin-top: 16px; background: var(--dark); color: #fff; border-radius: 14px;
-  padding: 12px 12px 12px 20px; display: flex; align-items: center; gap: 16px; font-size: 14px;
-  box-shadow: 0 8px 24px rgba(0,0,0,.18);
-}
-.bulk .btn { margin-left: auto; background: #fff; color: var(--text); }
+/* выбор строк: шапка таблицы сама становится панелью действия, как в почте и таблицах банка */
+.tr--h { position: sticky; top: 0; z-index: 2; background: #fff; border-radius: 16px 16px 0 0; }
+.tr--sel { min-height: 48px; margin-top: -8px; background: #F3F4F5; color: var(--text); font-size: 14px; } /* -8px: та же высота, что у обычной шапки, строки не прыгают */
+.sel__txt { grid-column: 2 / 5; font-weight: 500; }
+.sel__act { grid-column: 5 / 7; display: flex; justify-content: flex-end; }
+.cb.is-part { background: var(--dark); border-color: var(--dark); }
+.cb.is-part i { width: 8px; height: 2px; border-radius: 1px; background: #fff; }
 .note { background: #fff; border-radius: 16px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; font-size: 14px; line-height: 20px; margin-top: 16px; }
 .note .btn { margin-left: auto; }
 

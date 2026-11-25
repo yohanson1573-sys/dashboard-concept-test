@@ -605,9 +605,11 @@ function listHtml() {
   const all = rows.length && sel.size === rows.length;
   const table = rows.length ? `
     <div class="tbl">
-      <div class="tr tr--h">
-        ${canAct ? `<button class="cb ${all ? 'is-on' : ''}" data-a="selAll" aria-label="Выбрать все" aria-pressed="${all}">${all ? cbIcon : ''}</button>` : '<span></span>'}
-        <span>Контрагент</span><span>Назначение</span><span>Срок</span><span class="r">Сумма</span><span></span>
+      <div class="tr tr--h ${canAct && sel.size ? 'tr--sel' : ''}">
+        ${canAct ? `<button class="cb ${all ? 'is-on' : sel.size ? 'is-part' : ''}" data-a="selAll" aria-label="Выбрать все" aria-pressed="${all}">${all ? cbIcon : sel.size ? '<i></i>' : ''}</button>` : '<span></span>'}
+        ${canAct && sel.size
+          ? `<span class="sel__txt">Выбрано ${sel.size} на${NB}<span class="amt">${fmt(selSum)}</span></span><span class="sel__act"><button class="btn btn--dark" data-a="bulk">${bulkLabel}</button></span>`
+          : `<span>Контрагент</span><span>Назначение</span><span>Срок</span><span class="r">Сумма</span><span></span>`}
       </div>
       ${rows.map((r, i) => `<div class="tr">
         ${canAct ? `<button class="cb ${sel.has(i) ? 'is-on' : ''}" data-a="sel" data-v="${i}" aria-label="Выбрать платёж" aria-pressed="${sel.has(i)}">${sel.has(i) ? cbIcon : ''}</button>` : '<span></span>'}
@@ -621,13 +623,11 @@ function listHtml() {
       : `<div class="tbl"><div class="empty"><b>Платежей в работе пока нет</b>Сюда попадут платежи, которые ждут подписи, отправки или правки</div></div>`);
   const accNote = k === 'sign' && !isDir() && rows.length ? `<div class="note">Эти платежи подписывает Набоков И.${NB}Д. У вас нет права подписи.
       ${S.reminded ? `<button class="btn btn--gray" disabled>Напомнили в 13:20</button>` : `<button class="btn btn--dark" data-a="remind">Напомнить руководителю</button>`}</div>` : '';
-  const bulk = canAct && sel.size ? `<div class="bulk"><span>Выбрано ${sel.size} на <span class="amt">${fmt(selSum)}</span></span>
-      <button class="btn" data-a="bulk">${bulkLabel}</button></div>` : '';
   return `<div>
     <button class="crumb" data-a="home">${chev('l')} Главная</button>
     <div class="h1">Платежи в работе</div>
     <div class="ltabs">${tabs}</div>
-    ${accNote}${table}${bulk}
+    ${accNote}${table}
   </div>`;
 }
 
