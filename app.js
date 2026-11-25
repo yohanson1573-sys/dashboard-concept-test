@@ -605,11 +605,9 @@ function listHtml() {
   const all = rows.length && sel.size === rows.length;
   const table = rows.length ? `
     <div class="tbl">
-      <div class="tr tr--h ${canAct && sel.size ? 'tr--sel' : ''}">
-        ${canAct ? `<button class="cb ${all ? 'is-on' : sel.size ? 'is-part' : ''}" data-a="selAll" aria-label="Выбрать все" aria-pressed="${all}">${all ? cbIcon : sel.size ? '<i></i>' : ''}</button>` : '<span></span>'}
-        ${canAct && sel.size
-          ? `<span class="sel__txt">Выбрано ${sel.size} на${NB}<span class="amt">${fmt(selSum)}</span></span><span class="sel__act"><button class="btn btn--dark" data-a="bulk">${bulkLabel}</button></span>`
-          : `<span>Контрагент</span><span>Назначение</span><span>Срок</span><span class="r">Сумма</span><span></span>`}
+      <div class="tr tr--h">
+        ${canAct ? `<button class="cb ${all ? 'is-on' : ''}" data-a="selAll" aria-label="Выбрать все" aria-pressed="${all}">${all ? cbIcon : ''}</button>` : '<span></span>'}
+        <span>Контрагент</span><span>Назначение</span><span>Срок</span><span class="r">Сумма</span><span></span>
       </div>
       ${rows.map((r, i) => `<div class="tr">
         ${canAct ? `<button class="cb ${sel.has(i) ? 'is-on' : ''}" data-a="sel" data-v="${i}" aria-label="Выбрать платёж" aria-pressed="${sel.has(i)}">${sel.has(i) ? cbIcon : ''}</button>` : '<span></span>'}
@@ -621,13 +619,19 @@ function listHtml() {
     </div>` : (ORDER.some(key => st[key][0])
       ? `<div class="tbl"><div class="empty"><b>Здесь пусто</b>В статусе «${STATUS[k].n}» сейчас ничего нет</div></div>`
       : `<div class="tbl"><div class="empty"><b>Платежей в работе пока нет</b>Сюда попадут платежи, которые ждут подписи, отправки или правки</div></div>`);
+  /* действия с выбранными: своя строка над таблицей, стоит всегда, таблица не меняется */
+  const bar = canAct && rows.length ? `<div class="lbar">
+      <span class="lbar__txt">${sel.size ? `Выбрано ${sel.size} на${NB}<span class="amt">${fmt(selSum)}</span>` : `Отметьте платежи, чтобы ${k === 'sign' ? 'подписать' : 'обработать'} несколько сразу`}</span>
+      ${sel.size ? `<button class="link lbar__clear" data-a="selNone">Снять выбор</button>` : ''}
+      <button class="btn btn--dark" data-a="bulk" ${sel.size ? '' : 'disabled'}>${bulkLabel}</button>
+    </div>` : '';
   const accNote = k === 'sign' && !isDir() && rows.length ? `<div class="note">Эти платежи подписывает Набоков И.${NB}Д. У вас нет права подписи.
       ${S.reminded ? `<button class="btn btn--gray" disabled>Напомнили в 13:20</button>` : `<button class="btn btn--dark" data-a="remind">Напомнить руководителю</button>`}</div>` : '';
   return `<div>
     <button class="crumb" data-a="home">${chev('l')} Главная</button>
     <div class="h1">Платежи в работе</div>
     <div class="ltabs">${tabs}</div>
-    ${accNote}${table}
+    ${accNote}${bar}${table}
   </div>`;
 }
 
@@ -849,6 +853,7 @@ const ACTIONS = {
   home: () => { S.page = 'dash'; S.panel = false; S.sel = new Set(); render(); document.getElementById('scroll').scrollTop = 0; },
   lTab: v => { S.listStatus = v; S.sel = new Set(); render(); },
   sel: v => { const i = Number(v); S.sel.has(i) ? S.sel.delete(i) : S.sel.add(i); render(); },
+  selNone: () => { S.sel = new Set(); render(); },
   selAll: () => { const rows = rowsFor(S.listStatus); S.sel = S.sel.size === rows.length ? new Set() : new Set(rows.map((_, i) => i)); render(); },
   rowAct: (v, el) => listAct([Number(v)], el),
   todayRow: (v, el) => doToday(v, el),
