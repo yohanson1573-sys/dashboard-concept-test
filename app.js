@@ -442,11 +442,20 @@ function dealsHtml() {
       ${D.onb.hidden ? `<img src="${I('book180')}" alt="" style="width:180px;height:180px;margin-top:8px"><div class="sum__space"></div><div class="sum__lbl">Новые дела появятся здесь</div>` : `<div class="sum__space"></div>${onbCardHtml()}`}`;
   } else {
     sum = `<div class="sum__ttl">Что ждёт вас</div>
-      <div class="sumcard"><div><div class="sum__lbl">Ждут вас ${wn} ${plural(wn, 'дело', 'дела', 'дел')} из ${total}</div><div class="sum__total amt">${fmt(ws)}</div></div>
+      <div class="sumcard"><div class="sum__lbl">Ждут вас ${wn} из${NB}${total}${NB}${total % 10 === 1 && total % 100 !== 11 ? 'дела' : 'дел'}</div><div class="sum__total amt">${fmt(ws)}</div>
+        ${sharesHtml(ws)}
         ${tSum ? `<div class="sum__lbl">Из них на${NB}сегодня <span class="amt">${fmt(tSum)}</span></div>` : ''}</div>
       ${D.onb.hidden ? '' : onbCardHtml()}`;
   }
   return `<div class="sum">${sum}</div><div class="vdiv"></div><div class="queue">${queueHtml()}</div>`;
+}
+
+/* доли суммы «ждут вас» по типам документов: цвета те же, что у значков статусов */
+const SHARE_COL = { pay: '#897EFF', sign: '#3193FC', send: '#0CC44D', fix: '#EA8313', rej: '#EC2D20' };
+function sharesHtml(ws) {
+  if (!ws) return '';
+  const parts = waitingKeys().map(k => [k, S.D.statuses[k][1]]).filter(([, v]) => v > 0);
+  return `<div class="shares" aria-hidden="true">${parts.map(([k, v]) => `<i style="flex:${v} 1 0;background:${SHARE_COL[k]}"></i>`).join('')}</div>`;
 }
 
 function onbCardHtml() {
