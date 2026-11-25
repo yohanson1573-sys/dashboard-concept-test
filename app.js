@@ -143,6 +143,7 @@ function readHash() {
   S.long = p.get('long') === '1';
   if (p.get('bare') === '1') document.body.classList.add('bare');
   if (p.get('panel') === '1') S.openPanelOnLoad = true;
+  if (p.get('after') === '1') S.afterOnLoad = true;
 }
 function writeHash() {
   const p = new URLSearchParams({ s: S.scn });
@@ -157,7 +158,7 @@ function reset(withLoading = true) {
   Object.assign(S, { page: 'dash', panel: false, todayIdx: 0, promo: true, sel: new Set(), modal: null, reminded: false });
   document.getElementById('toasts')?.replaceChildren();
   writeHash();
-  if (withLoading) { S.loading = true; render(); setTimeout(() => { S.loading = false; if (S.openPanelOnLoad) { S.panel = true; S.openPanelOnLoad = false; } render(); }, 650); }
+  if (withLoading) { S.loading = true; render(); setTimeout(() => { S.loading = false; if (S.openPanelOnLoad) { S.panel = true; S.openPanelOnLoad = false; } render(); if (S.afterOnLoad) { S.afterOnLoad = false; const id = todayIds()[0]; if (id) doToday(id); } }, 650); }
   else render();
 }
 
@@ -331,7 +332,7 @@ function todayHtml() {
           <div class="bar"><i style="width:${it.bar * 100}%"></i></div>
           <div class="dl__why">${why}</div>
         </div>
-        ${items.length > 1 ? `<button class="link" style="margin-top:16px" data-a="openList" data-v="${it.status}">Все ${items.length} на${NB}сегодня · ${fmt(items.reduce((a, id) => a + todayItem(id).sum, 0))} ${chev('r')}</button>` : ''}
+        ${items.length > 1 ? `<button class="link" style="margin-top:16px" data-a="openList" data-v="today">Все ${items.length} на${NB}сегодня · ${fmt(items.reduce((a, id) => a + todayItem(id).sum, 0))} ${chev('r')}</button>` : ''}
       </div>
     </div>
     <div class="today__bottom">${btn}</div>`;
@@ -541,10 +542,46 @@ function rowsFor(k) {
   return rows;
 }
 
+/* Дела на сегодня: то же, что листает колонка «Сегодня», одним списком */
+function todayIds() {
+  const T = S.D.today;
+  return T.mode === 'today' && T.items ? T.items : [];
+}
+function todayTabHtml(ids) {
+  if (!ids.length) return `<div class="tbl"><div class="empty"><b>На сегодня всё сделано</b>Срочных дел не осталось</div></div>`;
+  const sum = ids.reduce((a, id) => a + TODAY_ITEMS[id].sum, 0);
+  return `
+    <div class="lsum">${ids.length} ${plural(ids.length, 'дело', 'дела', 'дел')} на сегодня · <span class="amt">${fmt(sum)}</span></div>
+    <div class="tbl">
+      <div class="tr tr--h"><span></span><span>Контрагент</span><span>Назначение</span><span>Срок</span><span class="r">Сумма</span><span></span></div>
+      ${ids.map(id => { const it = todayItem(id);
+        const btn = !isDir() && it.status === 'sign'
+          ? (S.reminded ? `<button class="btn btn--gray" disabled>Напомнили в 13:20</button>` : `<button class="btn btn--gray" data-a="remind">Напомнить</button>`)
+          : `<button class="btn btn--gray" data-a="todayRow" data-v="${id}">${!isDir() && it.status === 'pay' ? 'Подготовить платёж' : it.btn}</button>`;
+        return `<div class="tr"><span></span>
+          <span>${esc(it.who)}</span><span>${it.title || it.kind}</span><span>сегодня ${it.dl}</span>
+          <span class="r amt">${fmt(it.sum)}</span><span class="r">${btn}</span></div>`; }).join('')}
+    </div>`;
+}
+
 function listHtml() {
+  const tIds = todayIds();
   const k = S.listStatus;
   const st = S.D.statuses;
-  const tabs = (st.bank[0] ? ORDER : ORDER_NEW).map(key => {
+  const todayTab = tIds.length || k === 'today' ? `<button class="ltab ${k === 'today' ? 'is-on' : ''}" data-a="lTab" data-v="today">На сегодня <span class="cnt cnt--red">${tIds.length}</span></button>` : '';
+  if (k === 'today') {
+    const t = (st.bank[0] ? ORDER : ORDER_NEW).map(key => {
+      let n = STATUS[key].n; if (key === 'sign' && !isDir()) n = 'Ждут подписи руководителя';
+      return `<button class="ltab" data-a="lTab" data-v="${key}" ${st[key][0] ? '' : 'disabled'}>${n} <span class="cnt cnt--gray">${st[key][0]}</span></button>`;
+    }).join('');
+    return `<div>
+    <button class="crumb" data-a="home">${chev('l')} Главная</button>
+    <div class="h1">Платежи в работе</div>
+    <div class="ltabs">${todayTab}${t}</div>
+    ${todayTabHtml(tIds)}
+  </div>`;
+  }
+  const tabs = todayTab + (st.bank[0] ? ORDER : ORDER_NEW).map(key => {
     let n = STATUS[key].n; if (key === 'sign' && !isDir()) n = 'Ждут подписи руководителя';
     return `<button class="ltab ${key === k ? 'is-on' : ''}" data-a="lTab" data-v="${key}" ${st[key][0] ? '' : 'disabled'}>${n} <span class="cnt cnt--gray">${st[key][0]}</span></button>`;
   }).join('');
@@ -798,12 +835,13 @@ const ACTIONS = {
     toast({ pic: 'hero_blue', t: `Поступление 300${NB}000${NB}₽`, pts: '+500', s: 'Пополнение счёта: шаг знакомства закрыт', progress: doneCount() });
     render();
   },
-  openList: v => { S.page = 'list'; S.panel = false; const st = S.D.statuses; S.listStatus = v && STATUS[v] && st[v][0] ? v : (ORDER.find(k => st[k][0] && !(k === 'sign' && !isDir())) || ORDER.find(k => st[k][0]) || 'pay'); S.sel = new Set(); render(); document.getElementById('scroll').scrollTop = 0; },
+  openList: v => { S.page = 'list'; S.panel = false; const st = S.D.statuses; S.listStatus = v === 'today' && todayIds().length ? 'today' : v && STATUS[v] && st[v][0] ? v : (ORDER.find(k => st[k][0] && !(k === 'sign' && !isDir())) || ORDER.find(k => st[k][0]) || 'pay'); S.sel = new Set(); render(); document.getElementById('scroll').scrollTop = 0; },
   home: () => { S.page = 'dash'; S.panel = false; S.sel = new Set(); render(); document.getElementById('scroll').scrollTop = 0; },
   lTab: v => { S.listStatus = v; S.sel = new Set(); render(); },
   sel: v => { const i = Number(v); S.sel.has(i) ? S.sel.delete(i) : S.sel.add(i); render(); },
   selAll: () => { const rows = rowsFor(S.listStatus); S.sel = S.sel.size === rows.length ? new Set() : new Set(rows.map((_, i) => i)); render(); },
   rowAct: (v, el) => listAct([Number(v)], el),
+  todayRow: (v, el) => doToday(v, el),
   bulk: (v, el) => listAct([...S.sel], el),
 };
 

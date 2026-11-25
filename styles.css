@@ -381,3 +381,7 @@ img { display: block; }
 /* итерация 30: баллы в тосте значком справа от заголовка */
 .toast__head { display: flex; align-items: center; gap: 12px; }
 .toast__head .toast__t { flex: 1; }
+
+.lsum { margin-top: 20px; font-size: 14px; line-height: 20px; color: var(--text-2); }
+.lsum + .tbl { margin-top: 8px; }
+.ltab .cnt--red { margin-left: 0; }
