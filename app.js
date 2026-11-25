@@ -430,6 +430,8 @@ function dealsHtml() {
   const D = S.D;
   const { total, wn, ws } = totals();
   const st = S.D.statuses;
+  /* сколько из суммы «ждут вас» приходится на сегодня: у бухгалтера платежи на подпись не его */
+  const tSum = todayIds().map(id => TODAY_ITEMS[id]).filter(it => isDir() || it.status !== 'sign').reduce((x, it) => x + it.sum, 0);
   const allDone = S.scn !== 'new' && wn === 0 && st.draft[0] === 0 && (isDir() || st.sign[0] === 0);
   let sum;
   if (S.scn === 'new') {
@@ -440,8 +442,8 @@ function dealsHtml() {
       ${D.onb.hidden ? `<img src="${I('book180')}" alt="" style="width:180px;height:180px;margin-top:8px"><div class="sum__space"></div><div class="sum__lbl">Новые дела появятся здесь</div>` : `<div class="sum__space"></div>${onbCardHtml()}`}`;
   } else {
     sum = `<div class="sum__ttl">Что ждёт вас</div>
-      <div><div class="sum__lbl">Ждут вас ${wn} ${plural(wn, 'дело', 'дела', 'дел')} из ${total}</div><div class="sum__total amt">${fmt(ws)}</div></div>
-      ${isDir() ? '<div class="sum__space"></div>' : ''}
+      <div class="sumcard"><div><div class="sum__lbl">Ждут вас ${wn} ${plural(wn, 'дело', 'дела', 'дел')} из ${total}</div><div class="sum__total amt">${fmt(ws)}</div></div>
+        ${tSum ? `<div class="sum__lbl">Из них на${NB}сегодня <span class="amt">${fmt(tSum)}</span></div>` : ''}</div>
       ${D.onb.hidden ? '' : onbCardHtml()}`;
   }
   return `<div class="sum">${sum}</div><div class="vdiv"></div><div class="queue">${queueHtml()}</div>`;

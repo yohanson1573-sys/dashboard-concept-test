@@ -385,3 +385,7 @@ img { display: block; }
 .lsum { margin-top: 20px; font-size: 14px; line-height: 20px; color: var(--text-2); }
 .lsum + .tbl { margin-top: 8px; }
 .ltab .cnt--red { margin-left: 0; }
+
+/* карточка суммы «ждут вас»: переход от цвета подарка к синему знакомства */
+.sumcard { flex: 1; min-height: 98px; box-sizing: border-box; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; gap: 14px; color: #fff; background: linear-gradient(135deg, #897EFF 0%, #5B8CFF 100%); }
+.sumcard .sum__lbl { color: rgba(255,255,255,.9); }
