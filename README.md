@@ -4,7 +4,7 @@
 
 ## Как открыть
 
-Выложен: https://dashboard-concept-test.vercel.app (Vercel, проект `dashboard-concept-test`, закрытый репозиторий `yohanson1573-sys/dashboard-concept-test`, выложен 24.11). Обновить после правок: `tools/deploy-prototype.sh "что поменялось"` из папки проекта, Vercel пересоберет сам. На сайт не идут `README.md` и `ref/` (`.vercelignore`), индексация закрыта.
+Выложен: https://yohanson1573-sys.github.io/dashboard-concept-test/ (GitHub Pages, с 25.11) и https://dashboard-concept-test.vercel.app (Vercel, только с VPN; проект `dashboard-concept-test`, открытый с 25.11 репозиторий `yohanson1573-sys/dashboard-concept-test`, выложен 24.11). Обновить после правок: `tools/deploy-prototype.sh "что поменялось"` из папки проекта, Vercel пересоберет сам. На сайт не идут `README.md` и `ref/` (`.vercelignore`), индексация закрыта.
 
 Из папки проекта: `python3 -m http.server 4317 --bind 127.0.0.1 --directory prototype`, потом http://localhost:4317. Запуск в панели браузера Claude: конфигурация `alfa-prototype` в `.claude/launch.json`.
 
