@@ -190,6 +190,7 @@ const $app = () => document.getElementById('app');
 function render() {
   const D = S.D;
   renderDemo();
+  document.body.classList.toggle('hide-amt', !!S.hideAmt && S.page === 'dash');
   const html = `
     <aside class="side">${sideHtml()}</aside>
     <div class="body">
@@ -268,11 +269,11 @@ function dashHtml() {
         <button class="tab" data-a="stub" data-v="Сводка">Сводка</button>
         <button class="tab" data-a="stub" data-v="Мультибанк">Мультибанк</button>
       </div>
-      <div class="seg" aria-hidden="true">
-        <span class="is-on">${eyeIcon}</span>
-        <span>${eyeOffIcon}</span>
+      <div class="seg" role="group" aria-label="Суммы на главной">
+        <button class="${S.hideAmt ? '' : 'is-on'}" data-a="amt" data-v="show" aria-label="Показать суммы" aria-pressed="${!S.hideAmt}">${eyeIcon}</button>
+        <button class="${S.hideAmt ? 'is-on' : ''}" data-a="amt" data-v="hide" aria-label="Скрыть суммы" aria-pressed="${!!S.hideAmt}">${eyeOffIcon}</button>
       </div>
-      <button class="gear" data-a="stub" data-v="Настройка дашборда">${gearIcon}</button>
+      <button class="gear" data-a="stub" data-v="Настройка дашборда" aria-label="Настройка дашборда">${gearIcon}</button>
     </div>
     <section class="deals">${S.loading ? dealsSkel() : dealsHtml()}</section>`;
 }
@@ -435,7 +436,7 @@ function dealsHtml() {
   const allDone = S.scn !== 'new' && wn === 0 && st.draft[0] === 0 && (isDir() || st.sign[0] === 0);
   let sum;
   if (S.scn === 'new') {
-    sum = `<div class="sum__ttl">Что ждёт вас</div><div class="sum__lbl">Дел пока нет</div><div class="sum__space"></div>${onbCardHtml()}`;
+    sum = `<div class="sum__ttl">Что ждёт вас</div><div><div class="sum__lbl">Дел пока нет</div><div class="sum__lbl sum__hint">Здесь появится сумма счетов и${NB}платежей, которые ждут вас</div></div><div class="sum__space"></div>${onbCardHtml()}`;
   } else if (allDone) {
     sum = `<div class="sum__ttl">Что ждёт вас</div>
       <div><div class="sum__lbl">Последнее закрыто ${D.lastClosed || 'только что'}</div><div class="sum__total">Всё сделано</div></div>
@@ -606,11 +607,11 @@ function listHtml() {
   const table = rows.length ? `
     <div class="tbl">
       <div class="tr tr--h">
-        ${canAct ? `<button class="cb ${all ? 'is-on' : ''}" data-a="selAll">${all ? cbIcon : ''}</button>` : '<span></span>'}
+        ${canAct ? `<button class="cb ${all ? 'is-on' : ''}" data-a="selAll" aria-label="Выбрать все" aria-pressed="${all}">${all ? cbIcon : ''}</button>` : '<span></span>'}
         <span>Контрагент</span><span>Назначение</span><span>Срок</span><span class="r">Сумма</span><span></span>
       </div>
       ${rows.map((r, i) => `<div class="tr">
-        ${canAct ? `<button class="cb ${sel.has(i) ? 'is-on' : ''}" data-a="sel" data-v="${i}">${sel.has(i) ? cbIcon : ''}</button>` : '<span></span>'}
+        ${canAct ? `<button class="cb ${sel.has(i) ? 'is-on' : ''}" data-a="sel" data-v="${i}" aria-label="Выбрать платёж" aria-pressed="${sel.has(i)}">${sel.has(i) ? cbIcon : ''}</button>` : '<span></span>'}
         <span>${esc(r.who)}</span><span>${r.what}</span><span>${r.date}</span>
         <span class="r amt">${r.sum ? fmt(r.sum) : '—'}</span>
         <span class="r">${canAct ? `<button class="btn btn--gray" data-a="rowAct" data-v="${i}">${actLabel}</button>` : ''}</span>
@@ -740,7 +741,7 @@ function doToday(id, btn) {
       return render();
     }
     moveToBank(it.status, 1, it.sum);
-    if (D.scn === 'young' || it.status === 'pay') D.balance -= it.sum;
+    D.balance -= it.sum; /* подписанный и оплаченный одинаково уходят со счёта */
     if (it.step && D.onb.now.some(n => n.id === it.step)) {
       completeStep(it.step, true);
       toast({ pic: 'toast_pic', t: 'Платёж подписан и отправлен', pts: '+500', s: 'Первый платёж контрагенту:<br>шаг знакомства закрыт', progress: doneCount(), ms: 5200 });
@@ -801,6 +802,7 @@ const ACTIONS = {
   long: () => { S.long = !S.long; writeHash(); render(); },
   loading: () => { S.loading = !S.loading; render(); },
   reset: () => reset(),
+  amt: v => { S.hideAmt = v === 'hide'; render(); },
   stub: v => toast(`«${v}» — вне задания, в прототипе не нарисовано`),
   tIdx: v => { S.todayIdx += Number(v); render(); },
   doToday: (v, el) => doToday(v, el),
@@ -878,7 +880,7 @@ function listAct(idxs, el) {
     const n = take.length === rows.length ? all : take.length;
     const s = take.length === rows.length ? S.D.statuses[k][1] : sum;
     moveToBank(k, n, s);
-    if (k === 'pay') S.D.balance -= s;
+    S.D.balance -= s;
     const T = S.D.today;
     if (T.items) take.forEach(r => { const hit = Object.values(TODAY_ITEMS).find(t => (t.who === r.who || (r.who === LONG_NAME && t.id === 'p124')) && t.sum === r.sum); if (hit) T.items = T.items.filter(x => x !== hit.id); });
     if (T.mode === 'list') T.total = Math.max(0, T.total - n);
