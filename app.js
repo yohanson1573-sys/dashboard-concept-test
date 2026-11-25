@@ -242,12 +242,12 @@ function sideHtml() {
 function hdrHtml() {
   const user = isDir() ? 'Набоков И.Д.' : 'Смирнова А. В., бухгалтер';
   return `
-    <button class="hdr__btn" data-a="stub" data-v="Письма"><img src="${I('hdr_mail')}" alt=""></button>
-    <button class="hdr__btn" data-a="stub" data-v="Уведомления"><img src="${I('hdr_bell')}" alt=""></button>
+    <button class="hdr__btn" data-a="stub" data-v="Письма" aria-label="Письма"><img src="${I('hdr_mail')}" alt=""></button>
+    <button class="hdr__btn" data-a="stub" data-v="Уведомления" aria-label="Уведомления"><img src="${I('hdr_bell')}" alt=""></button>
     <div class="hdr__div"></div>
     <button class="org" data-a="stub" data-v="Смена организации" title="${esc(companyName())}"><img src="${I('company_logo')}" alt=""><div><div class="org__name">${esc(companyName())}</div><div class="org__user">${user}</div></div></button>
     <div class="hdr__div"></div>
-    <button class="hdr__btn" data-a="stub" data-v="Свернуть меню"><img src="${I('hdr_panel')}" alt=""></button>`;
+    <button class="hdr__btn" data-a="stub" data-v="Свернуть меню" aria-label="Свернуть меню"><img src="${I('hdr_panel')}" alt=""></button>`;
 }
 
 function dashHtml() {
@@ -316,9 +316,9 @@ function todayHtml() {
       <div class="today__head">
         <div class="ttl">Сегодня <span class="cnt cnt--red">${items.length}</span></div>
         ${items.length > 1 ? `<div class="sw">
-          <button data-a="tIdx" data-v="-1" ${idx === 0 ? 'disabled' : ''}>${swArrow('l')}</button>
+          <button aria-label="Предыдущее" data-a="tIdx" data-v="-1" ${idx === 0 ? 'disabled' : ''}>${swArrow('l')}</button>
           <span>${idx + 1} из ${items.length}</span>
-          <button data-a="tIdx" data-v="1" ${idx === items.length - 1 ? 'disabled' : ''}>${swArrow('r')}</button>
+          <button aria-label="Следующее" data-a="tIdx" data-v="1" ${idx === items.length - 1 ? 'disabled' : ''}>${swArrow('r')}</button>
         </div>` : ''}
       </div>
       <div>
@@ -381,9 +381,9 @@ function soonHtml() {
       <div class="today__head">
         <div class="ttl">Скоро <span class="cnt cnt--gray">${SOON_ITEMS.length}</span></div>
         <div class="sw">
-          <button data-a="tIdx" data-v="-1" ${idx === 0 ? 'disabled' : ''}>${swArrow('l')}</button>
+          <button aria-label="Предыдущее" data-a="tIdx" data-v="-1" ${idx === 0 ? 'disabled' : ''}>${swArrow('l')}</button>
           <span>${idx + 1} из ${SOON_ITEMS.length}</span>
-          <button data-a="tIdx" data-v="1" ${idx === SOON_ITEMS.length - 1 ? 'disabled' : ''}>${swArrow('r')}</button>
+          <button aria-label="Следующее" data-a="tIdx" data-v="1" ${idx === SOON_ITEMS.length - 1 ? 'disabled' : ''}>${swArrow('r')}</button>
         </div>
       </div>
       <div>
@@ -648,7 +648,7 @@ function panelHtml() {
     return `<div class="prow"><div class="prow__pic ${usesBadge ? 'chk' : ''}"><img src="${I(st.donePic)}" alt=""></div><div class="prow__t"><div class="prow__n">${st.t}</div><div class="prow__s">${date}</div></div>${st.noPts ? '' : `<span class="pts"><span class="ico-a">A</span>+500</span>`}</div>`;
   }).join('');
   return `
-    <div class="panel__head"><h2>Знакомство с банком</h2><button class="x" data-a="closePanel">${xIcon(16)}</button></div>
+    <div class="panel__head"><h2>Знакомство с банком</h2><button class="x" aria-label="Закрыть" data-a="closePanel">${xIcon(16)}</button></div>
     <div class="phero">
       <img src="${I('panel_gift')}" alt="">
       <div class="phero__big">${(dc >= 7 ? pts : stepPts).toLocaleString('ru-RU').replace(/\s/g, NB)} из ${dc >= 7 ? `4${NB}000` : `3${NB}000`}</div>
@@ -743,43 +743,43 @@ function doToday(id, btn) {
 }
 
 const MODALS = {
-  sub: () => `<button class="x" data-a="closeModal">${xIcon()}</button>
+  sub: () => `<button class="x" aria-label="Закрыть" data-a="closeModal">${xIcon()}</button>
     <img class="modal__pic" src="${I('now_sub')}" alt="">
     <h3>Подписка на переводы</h3>
     <p>Переводы контрагентам без комиссии в пределах лимита. По вашим делам: 2 платежа на «Отправить» ушли бы без комиссии.</p>
     <div class="kv"><span>Стоимость</span><span>1${NB}490${NB}₽ в месяц</span><span>Первый месяц</span><span>бесплатно</span><span>Списание</span><span>со счёта …2345</span><span>За шаг знакомства</span><span>+500 баллов</span></div>
     <p>Отключить можно в «Тарифы и подписки» в любой момент.</p>
     <div class="modal__actions"><button class="btn btn--dark" data-a="confirmStep" data-v="sub">Подключить</button><button class="btn btn--gray" data-a="closeModal">Не сейчас</button></div>`,
-  tax: () => `<button class="x" data-a="closeModal">${xIcon()}</button>
+  tax: () => `<button class="x" aria-label="Закрыть" data-a="closeModal">${xIcon()}</button>
     <img class="modal__pic" src="${I('now_tax')}" alt="">
     <h3>Налоговая копилка</h3>
     <p>Копилка будет откладывать часть каждого поступления, чтобы к сроку налога деньги уже лежали отдельно.</p>
     <div class="kv"><span>Откладывать</span><span>6% от поступлений</span><span>Ближайший налог</span><span>28 ноября</span><span>Стоимость</span><span>бесплатно</span><span>За шаг знакомства</span><span>+500 баллов</span></div>
     <div class="modal__actions"><button class="btn btn--dark" data-a="confirmStep" data-v="tax">Подключить</button><button class="btn btn--gray" data-a="closeModal">Не сейчас</button></div>`,
-  shield: () => `<button class="x" data-a="closeModal">${xIcon()}</button>
+  shield: () => `<button class="x" aria-label="Закрыть" data-a="closeModal">${xIcon()}</button>
     <img class="modal__pic" src="${I('next2')}" alt="">
     <h3>Защита от блокировок</h3>
     <p>Перед каждым платежом банк проверит контрагента и подскажет, если платёж может привести к блокировке счёта.</p>
     <div class="kv"><span>Стоимость</span><span>бесплатно</span><span>За шаг знакомства</span><span>+500 баллов</span></div>
     <div class="modal__actions"><button class="btn btn--dark" data-a="confirmStep" data-v="shield">Включить</button><button class="btn btn--gray" data-a="closeModal">Не сейчас</button></div>`,
-  self: () => `<button class="x" data-a="closeModal">${xIcon()}</button>
+  self: () => `<button class="x" aria-label="Закрыть" data-a="closeModal">${xIcon()}</button>
     <img class="modal__pic" src="${I('next1')}" alt="">
     <h3>Перевод себе в Альфа-Банк</h3>
     <p>На личный счёт или карту Альфа-Банка без комиссии.</p>
     <label class="field">Сумма<input id="selfSum" value="50${NB}000" inputmode="numeric"></label>
     <div class="kv"><span>Со счёта</span><span>…2345, <span class="amt">${fmt(S.D.balance)}</span></span><span>Куда</span><span>карта Альфа-Банка …8841</span><span>Комиссия</span><span>0${NB}₽</span></div>
     <div class="modal__actions"><button class="btn btn--dark" data-a="confirmStep" data-v="self">Перевести</button><button class="btn btn--gray" data-a="closeModal">Отмена</button></div>`,
-  topup: () => `<button class="x" data-a="closeModal">${xIcon()}</button>
+  topup: () => `<button class="x" aria-label="Закрыть" data-a="closeModal">${xIcon()}</button>
     <img class="modal__pic" src="${I('now_topup')}" alt="">
     <h3>Пополнить счёт</h3>
     <p>Переведите деньги с другого счёта по этим реквизитам. Шаг засчитается, когда придёт первое поступление.</p>
     <div class="kv"><span>Получатель</span><span>${esc(companyName())}</span><span>Счёт</span><span>40702${NB}810${NB}2${NB}0430${NB}0012345</span><span>БИК</span><span>044525593</span><span>Банк</span><span>АО «Альфа-Банк»</span></div>
     <div class="modal__actions"><button class="btn btn--dark" data-a="copyReq" data-v="modal">Скопировать реквизиты</button><button class="btn btn--gray" data-a="demoTopup">Показать, как придут деньги</button></div>`,
-  done: (title, text, pic) => `<button class="x" data-a="closeModal">${xIcon()}</button>
+  done: (title, text, pic) => `<button class="x" aria-label="Закрыть" data-a="closeModal">${xIcon()}</button>
     <div class="check">${checkIcon}</div>
     <h3>${title}</h3><p>${text}</p>
     <div class="modal__actions"><button class="btn btn--dark" data-a="closeModal">Готово</button></div>`,
-  spend: () => `<button class="x" data-a="closeModal">${xIcon()}</button>
+  spend: () => `<button class="x" aria-label="Закрыть" data-a="closeModal">${xIcon()}</button>
     <h3>На что потратить баллы</h3>
     <p>На счёте <span class="amt">${points().toLocaleString('ru-RU').replace(/\s/g, NB)}</span> баллов. Курс и предложения придуманы для прототипа.</p>
     ${[['Месяц обслуживания счёта', 'вместо оплаты тарифа', 1500], ['10 переводов без комиссии', 'контрагентам, в течение месяца', 1000], ['Скидка 50% на выписку для госзакупок', 'одна выписка', 500]].map(([t, s, c]) =>
@@ -826,7 +826,6 @@ const ACTIONS = {
         v === 'self' ? 'Деньги отправлены' : `${st.t}: подключено`,
         dc >= 7 ? `Это был последний шаг. Начислено 500 баллов за шаг и 1${NB}000 бонусом за всё знакомство.` : `Шаг знакомства закрыт, +500 баллов. Пройдено ${dc} из 7.`);
       render();
-      toast({ pic: dc >= 7 ? 'gift130' : st.pic, t: dc >= 7 ? 'Знакомство пройдено' : `${st.t}: готово`, pts: dc >= 7 ? `+1${NB}000` : '+500', s: dc >= 7 ? `Всего за знакомство 4${NB}000 баллов` : 'Шаг знакомства закрыт', progress: dc });
     });
   },
   demoTopup: () => {
